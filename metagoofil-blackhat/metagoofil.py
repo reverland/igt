@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from discovery import googlesearch
 from extractors import *
+import chardet
 import urllib
 import os
 import downloader
@@ -190,7 +191,13 @@ def doprocess(argv):
 #                pass
     proc=processor.processor(all)
     userlist=proc.sort_users()
+    # unicode metadata
+    for i in range(len(userlist)):
+        userlist[i] = userlist[i].decode(chardet.detect(userlist[i])['encoding']).encode('utf8')
     softlist=proc.sort_software()
+    # unicode metadata
+    for i in range(len(softlist)):
+        softlist[i] = softlist[i].decode(chardet.detect(softlist[i])['encoding'].encode('utf8'))
     pathlist=proc.sort_paths()
     try:
         html = htmlExport.htmlExport(userlist,softlist,pathlist,all,outhtml,dir,failedfiles,word,emails)

@@ -91,6 +91,8 @@ def doprocess(argv):
             print "----------------------------------------\n"
             counter=1
             for x in files[1::]:
+                x = urllib.unquote(x)
+                x = urllib.unquote(x)
                 if counter <= filelimit:
                     print "["+str(counter)+"/"+str(filelimit)+"] " + x
                     getfile=downloader.downloader(x,dir)
@@ -135,36 +137,37 @@ def doprocess(argv):
         for filename in dirList:
             if filename !="":
                 print "Processing" + filename
-                filetype=str(filename.split(".")[-1])
-                if filetype == "pdf":
-                    test=metadataPDF.metapdf(dir+"/"+filename,password)
-                elif filetype == "doc" or filetype == "ppt" or filetype == "xls":
-                    test=metadataMSOffice.metaMs2k(dir+"/"+filename)
-                    if os.name=="posix":
-                        testex=metadataExtractor.metaExtractor(dir+"/"+filename)
-                elif filetype == "docx" or filetype == "pptx" or filetype == "xlsx":
-                    test=metadataMSOfficeXML.metaInfoMS(dir+"/"+filename)
-                res=test.getData()
-                if res=="ok":
-                    raw=test.getRaw()
-                    users=test.getUsers()
-                    paths=test.getPaths()
-                    soft=test.getSoftware()
-                    email=[]
-                    if filetype =="pdf" or filetype =="docx":
-                        res=test.getTexts()
-                        if res=="ok":
-                            email=test.getEmails()
-                            for em in email:
-                                emails.append(em)
-                        else:
-                            email=[]
-                            failedfiles.append(filename+":"+str(res))
-                    respack=[filename,users,paths,soft,raw,email]
-                    all.append(respack)
-                else:
-                    failedfiles.append(filename+":"+str(res))
-                    print "[x] Error in the parsing process" #A error in the parsing process
+                # filetype=str(filename.split(".")[-1])
+                for filetype in filetypes:
+                    if filetype == "pdf":
+                        test=metadataPDF.metapdf(dir+"/"+filename,password)
+                    elif filetype == "doc" or filetype == "ppt" or filetype == "xls":
+                        test=metadataMSOffice.metaMs2k(dir+"/"+filename)
+                        if os.name=="posix":
+                            testex=metadataExtractor.metaExtractor(dir+"/"+filename)
+                    elif filetype == "docx" or filetype == "pptx" or filetype == "xlsx":
+                        test=metadataMSOfficeXML.metaInfoMS(dir+"/"+filename)
+                    res=test.getData()
+                    if res=="ok":
+                        raw=test.getRaw()
+                        users=test.getUsers()
+                        paths=test.getPaths()
+                        soft=test.getSoftware()
+                        email=[]
+                        if filetype =="pdf" or filetype =="docx":
+                            res=test.getTexts()
+                            if res=="ok":
+                                email=test.getEmails()
+                                for em in email:
+                                    emails.append(em)
+                            else:
+                                email=[]
+                                failedfiles.append(filename+":"+str(res))
+                        respack=[filename,users,paths,soft,raw,email]
+                        all.append(respack)
+                    else:
+                        failedfiles.append(filename+":"+str(res))
+                        print "[x] Error in the parsing process" #A error in the parsing process
             else:
                 pass
 #                    if (filetype == "doc" or filetype == "xls" or filetype == "ppt") and os.name=="posix":
@@ -193,10 +196,20 @@ def doprocess(argv):
     userlist=proc.sort_users()
     # unicode metadata
     for i in range(len(userlist)):
+        if isinstance(userlist[i], unicode):
+            temp = userlist[i]
+            userlist[i] = ""
+            for c in temp:
+                userlist[i] += chr(ord(c))
         userlist[i] = userlist[i].decode(chardet.detect(userlist[i])['encoding']).encode('utf8')
     softlist=proc.sort_software()
     # unicode metadata
     for i in range(len(softlist)):
+        if isinstance(softlist[i], unicode):
+            temp = softlist[i]
+            softlist[i] = ""
+            for c in temp:
+                softlist[i] += chr(ord(c))
         softlist[i] = softlist[i].decode(chardet.detect(softlist[i])['encoding'].encode('utf8'))
     pathlist=proc.sort_paths()
     try:

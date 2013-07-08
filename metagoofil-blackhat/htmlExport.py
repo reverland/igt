@@ -128,8 +128,19 @@ class htmlExport():
             page.h3(x[0])
             page.a("Local copy", class_="link", href=self.dir+"/"+x[0].split('/')[-1])
             for i in range(len(x[1])):
+                if isinstance(x[1][i], unicode):
+                    temp = x[1][i]
+                    x[1][i] = ""
+                    for c in temp:
+                        x[1][i] += chr(ord(c))
                 x[1][i] = x[1][i].decode(chardet.detect(x[1][i])['encoding']).encode('utf8')
             for i in range(len(x[2])):
+                if isinstance(x[2][i], unicode):
+                    temp = x[2][i]
+                    x[2][i] = ""
+                    for c in temp:
+                        x[2][i] += chr(ord(c))
+                x[1][i] = x[1][i].decode(chardet.detect(x[1][i])['encoding']).encode('utf8')
                 x[2][i] = x[2][i].decode(chardet.detect(x[2][i])['encoding']).encode('utf8')
             page.pre(x[1])
             page.pre(x[2])

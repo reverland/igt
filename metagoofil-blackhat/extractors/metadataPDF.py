@@ -35,7 +35,7 @@ class metapdf:
             password =''
             pagenos = set()
             maxpages = 0
-            codec = 'utf-8'
+            codec = 'gb2312'
             caching = True
             laparams = LAParams()
             rsrcmgr = PDFResourceManager(caching=caching)

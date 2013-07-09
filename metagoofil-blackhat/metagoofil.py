@@ -90,7 +90,7 @@ def doprocess(argv):
             print "Starting to download "+ str(filelimit) + " of them:"
             print "----------------------------------------\n"
             counter=1
-            for x in files[1::]:
+            for x in files:
                 x = urllib.unquote(x)
                 x = urllib.unquote(x)
                 if counter <= filelimit:
@@ -201,7 +201,10 @@ def doprocess(argv):
             userlist[i] = ""
             for c in temp:
                 userlist[i] += chr(ord(c))
-        userlist[i] = userlist[i].decode(chardet.detect(userlist[i])['encoding']).encode('utf8')
+        try:
+            userlist[i] = userlist[i].decode('gb2312').encode('utf8')
+        except:
+            userlist[i] = userlist[i].decode(chardet.detect(userlist[i])['encoding']).encode('utf8')
     softlist=proc.sort_software()
     # unicode metadata
     for i in range(len(softlist)):
@@ -210,7 +213,10 @@ def doprocess(argv):
             softlist[i] = ""
             for c in temp:
                 softlist[i] += chr(ord(c))
-        softlist[i] = softlist[i].decode(chardet.detect(softlist[i])['encoding'].encode('utf8'))
+        try:
+            softlist[i] = softlist[i].decode('gb2312').encode('utf8')
+        except:
+            softlist[i] = softlist[i].decode(chardet.detect(softlist[i])['encoding']).encode('utf8')
     pathlist=proc.sort_paths()
     try:
         html = htmlExport.htmlExport(userlist,softlist,pathlist,all,outhtml,dir,failedfiles,word,emails)

@@ -133,19 +133,32 @@ class htmlExport():
                     x[1][i] = ""
                     for c in temp:
                         x[1][i] += chr(ord(c))
-                x[1][i] = x[1][i].decode(chardet.detect(x[1][i])['encoding']).encode('utf8')
+                try:
+                    x[1][i] = x[1][i].decode('gb2312').encode('utf8')
+                except:
+                    x[1][i] = x[1][i].decode(chardet.detect(x[1][i])['encoding']).encode('utf8')
             for i in range(len(x[2])):
                 if isinstance(x[2][i], unicode):
                     temp = x[2][i]
                     x[2][i] = ""
                     for c in temp:
                         x[2][i] += chr(ord(c))
-                x[1][i] = x[1][i].decode(chardet.detect(x[1][i])['encoding']).encode('utf8')
-                x[2][i] = x[2][i].decode(chardet.detect(x[2][i])['encoding']).encode('utf8')
+                try:
+                    x[2][i] = x[2][i].decode('gb2312').encode('utf8')
+                except:
+                    x[2][i] = x[2][i].decode(chardet.detect(x[2][i])['encoding']).encode('utf8')
             page.pre(x[1])
             page.pre(x[2])
             for i in range(len(x[3])):
-                x[3][i] = x[3][i].decode(chardet.detect(x[3][i])['encoding']).encode('utf8')
+                if isinstance(x[3][i], unicode):
+                    temp = x[3][i]
+                    x[3][i] = ""
+                    for c in temp:
+                        x[3][i] += chr(ord(c))
+                try:
+                    x[3][i] = x[3][i].decode('gb2312').encode('utf8')
+                except:
+                    x[3][i] = x[3][i].decode(chardet.detect(x[3][i])['encoding']).encode('utf8')
             page.pre(x[3][i])
             page.pre(x[5])
             page.pre.close()

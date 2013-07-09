@@ -46,7 +46,7 @@ class parser:
         self.temp = reg_urls.findall(self.results)
         allurls=self.unique()
         for x in allurls:
-            if x.count('webcache') or x.count('google.es') or x.count('search?') or x.count('about.html') or x.count('privacy.html') or x.count('ads/') or x.count('services/') or x == "#" or x=="/":
+            if x.count('webhp') or x.count('services') or x.count('tools') or x.count('support') or x.count('intl') or x.count('webcache') or x.count('google.es') or x.count('search?') or x.count('about.html') or x.count('privacy.html') or x.count('ads/') or x.count('services/') or x == "#" or x=="/":
                 pass
             else:
                 urls.append(x.replace("/url?q=", "", 1).split("&amp")[0])

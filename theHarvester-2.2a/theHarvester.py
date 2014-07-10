@@ -13,20 +13,24 @@ print "\n*******************************************************************"
 print "*                                                                 *"
 print "* | |_| |__   ___    /\  /\__ _ _ ____   _____  ___| |_ ___ _ __  *"
 print "* | __| '_ \ / _ \  / /_/ / _` | '__\ \ / / _ \/ __| __/ _ \ '__| *"
-print "* | |_| | | |  __/ / __  / (_| | |   \ V /  __/\__ \ ||  __/ |    *"  
+print "* | |_| | | |  __/ / __  / (_| | |   \ V /  __/\__ \ ||  __/ |    *"
 print "*  \__|_| |_|\___| \/ /_/ \__,_|_|    \_/ \___||___/\__\___|_|    *"
 print "*                                                                 *"
 print "* TheHarvester Ver. 2.2a                                          *"
 print "* Coded by Christian Martorella                                   *"
 print "* Edge-Security Research                                          *"
 print "* cmartorella@edge-security.com                                   *"
+print "* Add Baidu's Mod                                                 *"
+print "* Fix English bing can't get vhost in China                       *"
+print "* Modify by He Shang                                              *"
+print "* Ha.cker@me.com                                                  *"
 print "*******************************************************************\n\n"
 
 def usage():
 
  print "Usage: theharvester options \n"
  print "       -d: Domain to search or company name"
- print "       -b: Data source (google,bing,bingapi,pgp,linkedin,google-profiles,people123,jigsaw,all)"
+ print "       -b: Data source (google,baidu, bing,bingapi,pgp,linkedin,google-profiles,people123,jigsaw,all)"
  print "       -s: Start in result number X (default 0)"
  print "       -v: Verify host name via dns resolution and search for virtual hosts"
  print "       -f: Save the results into an HTML and XML file"
@@ -67,7 +71,7 @@ def start(argv):
 		if opt == '-l' :
 			limit = int(arg)
 		elif opt == '-d':
-			word = arg	
+			word = arg
 		elif opt == '-s':
 			start = int(arg)
 		elif opt == '-v':
@@ -86,7 +90,7 @@ def start(argv):
 			dnstld=True
 		elif opt == '-b':
 			engine = arg
-			if engine not in ("google", "linkedin", "pgp", "all","google-profiles","bing","bing_api","yandex","people123","jigsaw"):
+			if engine not in ("google", "baidu", "linkedin", "pgp", "all","google-profiles","bing","bing_api","yandex","people123","jigsaw"):
 				usage()
 				print "Invalid search engine, try with: bing, google, linkedin, pgp, exalead, jigsaw, bing_api, people123, google-profiles"
 				sys.exit()
@@ -98,13 +102,19 @@ def start(argv):
 		search.process()
 		all_emails=search.get_emails()
 		all_hosts=search.get_hostnames()
+	if engine == "baidu":
+		print "[-] Searching in Baidu:"
+		search=baidusearch.search_baidu(word,limit,start)
+		search.process()
+		all_emails=search.get_emails()
+		all_hosts=search.get_hostnames()
 	if engine == "exalead":
 		print "[-] Searching in Exalead:"
 		search=exaleadsearch.search_exalead(word,limit,start)
 		search.process()
 		all_emails=search.get_emails()
 		all_hosts=search.get_hostnames()
-	elif engine == "bing" or engine =="bingapi":	
+	elif engine == "bing" or engine =="bingapi":
 		print "[-] Searching in Bing:"
 		search=bingsearch.search_bing(word,limit,start)
 		if engine =="bingapi":
@@ -209,13 +219,15 @@ def start(argv):
 		print "No emails found"
 	else:
 		for emails in all_emails:
-			print emails 
+			print emails
 
 	print "\n[+] Hosts found in search engines:"
 	print "------------------------------------"
 	if all_hosts == []:
 		print "No hosts found"
 	else:
+		xhost = list(set(all_hosts))#add by ha.cker list(set) is use for Remove duplicate host
+		#full_host=hostchecker.Checker(all_hosts)
 		full_host=hostchecker.Checker(all_hosts)
 		full=full_host.check()
 		for host in full:
@@ -225,7 +237,7 @@ def start(argv):
 				pass
 			else:
 				host_ip.append(ip.lower())
-	
+
 	#DNS reverse lookup#################################################
 	dnsrev=[]
 	if dnslookup==True:
@@ -278,7 +290,7 @@ def start(argv):
 			dnstldres.append(y)
 			if y not in full:
 				full.append(y)
-	
+
 	#Virtual hosts search###############################################
 	if virtual == "basic":
 		print "[+] Virtual hosts:"
@@ -302,7 +314,7 @@ def start(argv):
 			try:
 				ip=x.split(":")[0]
 				if not shodanvisited.count(ip):
-					print "\tSearching for: " + x 
+					print "\tSearching for: " + x
 					a=shodansearch.search_shodan(ip)
 					shodanvisited.append(ip)
 					results=a.run()
@@ -320,7 +332,7 @@ def start(argv):
 	###################################################################
 	#Here i need to add explosion mode.
 	#Tengo que sacar los TLD para hacer esto.
-	recursion= None	
+	recursion= None
 	if recursion:
 		start=0
 		for word in vhost:
@@ -332,15 +344,15 @@ def start(argv):
 			print hosts
 	else:
 		pass
-	
-	if filename!="":	
+
+	if filename!="":
 		try:
 			print "Saving file"
 			html = htmlExport.htmlExport(all_emails,full,vhost,dnsres,dnsrev,filename,word,shodanres,dnstldres)
 			save = html.writehtml()
 			sys.exit()
 		except Exception,e:
-			print e	
+			print e
 			print "Error creating the file"
 	filename = filename.split(".")[0]+".xml"
 	file = open(filename,'w')
@@ -354,7 +366,7 @@ def start(argv):
 	file.write('</theHarvester>')
 	file.close
 
-		
+
 if __name__ == "__main__":
         try: start(sys.argv[1:])
 	except KeyboardInterrupt:

@@ -10,9 +10,9 @@ class search_google:
 		self.files="pdf"
 		self.results=""
 		self.totalresults=""
-		self.server="www.google.es"
+		self.server="www.google.com"
 		self.server_api="www.googleapis.com"
-		self.hostname="www.google.es"
+		self.hostname="www.google.com"
 		self.userAgent="(Mozilla/5.0 (Windows; U; Windows NT 6.0;en-US; rv:1.9.2) Gecko/20100115 Firefox/3.6)"
 		self.quantity="100"
 		self.limit=limit
@@ -28,6 +28,7 @@ class search_google:
 		returncode, returnmsg, headers = h.getreply()
 		self.results = h.getfile().read()
 		self.totalresults+= self.results
+		print "/search?num="+self.quantity+"&start=" + str(self.counter) + "&hl=en&meta=&q=%40\"" + self.word + "\""
 
 	def do_search_api(self):
 		h = httplib.HTTPS(self.server_api)
